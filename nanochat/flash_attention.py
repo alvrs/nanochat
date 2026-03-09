@@ -151,7 +151,7 @@ def _reference_softmax_attn(q, k, v):
 
     return y.transpose(1, 2) # -> (B, T, H, D)
 
-def _linear_softmax_attn(q, k, v, degree=2):
+def _linear_attn(q, k, v, degree=2):
     # Same as _reference_softmax_attn
     q, k, v = q.transpose(1,2), k.transpose(1,2), v.transpose(1,2) # (B, T, H, D) -> (B, H, T, D)
     scale = q.size(-1) ** -0.5
@@ -168,7 +168,7 @@ def _linear_softmax_attn(q, k, v, degree=2):
 
     # Normalize to get rows that sum to 1
     sums = torch.sum(attn, dim=-1, keepdim=True)
-    attn = attn / (sums + 1e-6)
+    attn = attn / sums.clamp(min=1e-6)
 
     # Apply attention to value tensor
     y = torch.matmul(attn, v)
