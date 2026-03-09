@@ -39,7 +39,7 @@ class GPTConfig:
     # Examples: "L"=all full context, "SL"=alternating, "SSL"=two short then one long
     window_pattern: str = "SSSL"
     # Attention type, options "flash" | "linear"
-    attention_type: str = "linear"
+    attention_type: str = "flash"
 
 
 def norm(x):
@@ -84,7 +84,7 @@ class CausalSelfAttention(nn.Module):
         self.attention_type = config.attention_type
 
         if self.attention_type == "linear":
-            assert self.n_head != self.n_kv_head, "TODO: GQA not implemented"
+            assert self.n_head == self.n_kv_head, "TODO: GQA not implemented"
 
 
     def forward(self, x, ve, cos_sin, window_size, kv_cache):
