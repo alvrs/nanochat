@@ -79,8 +79,9 @@ def linear_attn(q, k, v, scale, degree=2):
     # Apply learnable scale followed by polynomial sharpening
     # to allow each head to decide how peaked the attention distribution should be
     # to emulate the softmax/exp expressiveness
+    attn = torch.relu(attn)
     attn = attn * scale.to(attn.dtype).view(1, -1, 1, 1)
-    attn = torch.relu(attn).pow(degree)
+    attn = attn.pow(degree)
 
     # Normalize to get rows that sum to 1
     sums = torch.sum(attn, dim=-1, keepdim=True)
