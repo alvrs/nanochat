@@ -84,8 +84,7 @@ class CausalSelfAttention(nn.Module):
         self.attention_type = config.attention_type
 
         if self.attention_type == "linear":
-            # Per head scale to emulate exp's expressiveness
-            self.attention_scale = nn.Parameter(torch.ones(1, self.n_head))
+            self.attention_poly = nn.Parameter(torch.ones(3, self.n_head))
 
             assert self.n_head == self.n_kv_head, "TODO: GQA not implemented"
 
@@ -131,7 +130,7 @@ class CausalSelfAttention(nn.Module):
                     kv_cache.advance(T)
         elif self.attention_type == "linear":
             # TODO: add support for kv_cache
-            y = linear_attn(q, k, v, self.attention_scale)
+            y = linear_attn(q, k, v, self.attention_poly)
 
         # Re-assemble the heads and project back to residual stream
         y = y.contiguous().view(B, T, -1)

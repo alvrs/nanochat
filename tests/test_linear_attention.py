@@ -11,9 +11,9 @@ class TestLinearAttention:
         q = torch.randn(B, T, H, D)
         k = torch.randn(B, T, H, D)
         v = torch.randn(B, T, H, D)
-        scale = torch.ones(H)
+        attention_poly = torch.ones(3, H)
 
-        y = linear_attn(q, k, v, scale)
+        y = linear_attn(q, k, v, attention_poly)
 
         assert y.shape == (B, T, H, D)
         assert not torch.isnan(y).any()
@@ -24,9 +24,9 @@ class TestLinearAttention:
         q = torch.randn(B, T, H, D, requires_grad=True)
         k = torch.randn(B, T, H, D, requires_grad=True)
         v = torch.randn(B, T, H, D, requires_grad=True)
-        scale = torch.ones(H, requires_grad=True)
+        attention_poly = torch.ones(3, H, requires_grad=True)
 
-        y = linear_attn(q, k, v, scale)
+        y = linear_attn(q, k, v, attention_poly)
         loss = y.sum()
         loss.backward()
 
@@ -43,9 +43,9 @@ class TestLinearAttention:
         k = torch.randn(B, T, H, D)
         v = torch.zeros(B, T, H, D)
         v[:, -1, :, :] = 1.0
-        scale = torch.ones(H)
+        attention_poly = torch.ones(3, H)
 
-        y = linear_attn(q, k, v, scale)
+        y = linear_attn(q, k, v, attention_poly)
 
         assert y[:, :-1].abs().max() < 1e-5
     
@@ -54,9 +54,9 @@ class TestLinearAttention:
         q = torch.randn(B, T, H, D)
         k = torch.randn(B, T, H, D)
         v = torch.ones(B, T, H, D)
-        scale = torch.ones(H)
+        attention_poly = torch.ones(3, H)
 
-        y = linear_attn(q, k, v, scale)
+        y = linear_attn(q, k, v, attention_poly)
 
         is_one = (y - 1.0).abs() < 1e-5
         is_zero = y < 1e-5
@@ -67,9 +67,9 @@ class TestLinearAttention:
         q = torch.randn(B, T, H, D)
         k = torch.randn(B, T, H, D)
         v = torch.randn(B, T, H, D)
-        scale = torch.ones(H)
+        attention_poly = torch.ones(3, H)
 
-        y_linear = linear_attn(q, k, v, scale)
+        y_linear = linear_attn(q, k, v, attention_poly)
         y_softmax = _reference_softmax_attn(q, k, v)
 
         cos = torch.nn.functional.cosine_similarity(y_linear, y_softmax, dim=-1)
@@ -83,9 +83,9 @@ class TestLinearAttention:
 
         # v = identity -> output is attention scores
         v = torch.eye(T, D).unsqueeze(1).expand(B, T, H, D)
-        scale = torch.ones(H)
+        attention_poly = torch.ones(3, H)
 
-        attn_linear = linear_attn(q, k, v, scale)
+        attn_linear = linear_attn(q, k, v, attention_poly)
         attn_softmax = _reference_softmax_attn(q, k, v)
 
         k = 3

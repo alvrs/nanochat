@@ -64,7 +64,7 @@ def capture_attn():
     finally:
         _attn_capture = None
 
-def linear_attn(q, k, v, scale, degree=2):
+def linear_attn(q, k, v, poly_coeffs):
     # Same as _reference_softmax_attn
     q, k, v = q.transpose(1,2), k.transpose(1,2), v.transpose(1,2) # (B, T, H, D) -> (B, H, T, D)
     dk_scale = q.size(-1) ** -0.5
@@ -80,8 +80,8 @@ def linear_attn(q, k, v, scale, degree=2):
     # to allow each head to decide how peaked the attention distribution should be
     # to emulate the softmax/exp expressiveness
     attn = torch.relu(attn)
-    attn = attn * scale.to(attn.dtype).view(1, -1, 1, 1)
-    attn = attn.pow(degree)
+    coeffs = poly_coeffs.to(attn.dtype).view(3, 1, -1, 1, 1) # (3, 1, H, 1, 1)
+    attn = coeffs[0] * attn + coeffs[1] * attn.pow(2) + coeffs[2] * attn.pow(4)
 
     # Normalize to get rows that sum to 1
     sums = torch.sum(attn, dim=-1, keepdim=True)
