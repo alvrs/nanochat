@@ -64,11 +64,11 @@ def capture_attn():
     finally:
         _attn_capture = None
 
-def linear_attn(q, k, v, degree=2):
+def linear_attn(q, k, v, scale, degree=2):
     # Same as _reference_softmax_attn
     q, k, v = q.transpose(1,2), k.transpose(1,2), v.transpose(1,2) # (B, T, H, D) -> (B, H, T, D)
-    scale = q.size(-1) ** -0.5
-    attn = torch.matmul(q, k.transpose(-2, -1)) * scale
+    dk_scale = q.size(-1) ** -0.5
+    attn = torch.matmul(q, k.transpose(-2, -1)) * dk_scale
     T = q.size(2)
     TT = torch.ones(T, T, device=q.device, dtype=torch.bool)
     mask = torch.triu(TT, diagonal=1)
@@ -76,7 +76,10 @@ def linear_attn(q, k, v, degree=2):
     # Apply causal mask (every "future query" result becomes 0)
     attn = attn.masked_fill(mask, 0)
 
-    # Apply linear scaling to achieve similar sharpening effect as softmax
+    # Apply learnable scale followed by polynomial sharpening
+    # to allow each head to decide how peaked the attention distribution should be
+    # to emulate the softmax/exp expressiveness
+    attn = attn * scale.to(attn.dtype)[None, :, None, None]
     attn = torch.relu(attn).pow(degree)
 
     # Normalize to get rows that sum to 1
