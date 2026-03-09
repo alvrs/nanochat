@@ -83,6 +83,10 @@ class CausalSelfAttention(nn.Module):
         self.ve_gate = Linear(self.ve_gate_channels, self.n_kv_head, bias=False) if has_ve(layer_idx, config.n_layer) else None
         self.attention_type = config.attention_type
 
+        if self.attention_type == "linear":
+            assert self.n_head != self.n_kv_head, "TODO: GQA not implemented"
+
+
     def forward(self, x, ve, cos_sin, window_size, kv_cache):
         B, T, C = x.size()
 
