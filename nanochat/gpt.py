@@ -85,7 +85,7 @@ class CausalSelfAttention(nn.Module):
 
         if self.attention_type == "linear":
             # Per head scale to emulate exp's expressiveness
-            self.attention_scale = nn.Parameter(torch.ones(self.n_head))
+            self.attention_scale = nn.Parameter(torch.ones(1, self.n_head))
 
             assert self.n_head == self.n_kv_head, "TODO: GQA not implemented"
 
