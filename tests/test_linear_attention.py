@@ -11,8 +11,9 @@ class TestLinearAttention:
         q = torch.randn(B, T, H, D)
         k = torch.randn(B, T, H, D)
         v = torch.randn(B, T, H, D)
+        scale = torch.ones(H)
 
-        y = linear_attn(q, k, v)
+        y = linear_attn(q, k, v, scale)
 
         assert y.shape == (B, T, H, D)
         assert not torch.isnan(y).any()
@@ -23,8 +24,9 @@ class TestLinearAttention:
         q = torch.randn(B, T, H, D, requires_grad=True)
         k = torch.randn(B, T, H, D, requires_grad=True)
         v = torch.randn(B, T, H, D, requires_grad=True)
+        scale = torch.ones(H, requires_grad=True)
 
-        y = linear_attn(q, k, v)
+        y = linear_attn(q, k, v, scale)
         loss = y.sum()
         loss.backward()
 
@@ -41,8 +43,9 @@ class TestLinearAttention:
         k = torch.randn(B, T, H, D)
         v = torch.zeros(B, T, H, D)
         v[:, -1, :, :] = 1.0
+        scale = torch.ones(H)
 
-        y = linear_attn(q, k, v)
+        y = linear_attn(q, k, v, scale)
 
         assert y[:, :-1].abs().max() < 1e-5
     
@@ -51,8 +54,9 @@ class TestLinearAttention:
         q = torch.randn(B, T, H, D)
         k = torch.randn(B, T, H, D)
         v = torch.ones(B, T, H, D)
+        scale = torch.ones(H)
 
-        y = linear_attn(q, k, v)
+        y = linear_attn(q, k, v, scale)
 
         is_one = (y - 1.0).abs() < 1e-5
         is_zero = y < 1e-5
@@ -63,8 +67,9 @@ class TestLinearAttention:
         q = torch.randn(B, T, H, D)
         k = torch.randn(B, T, H, D)
         v = torch.randn(B, T, H, D)
+        scale = torch.ones(H)
 
-        y_linear = linear_attn(q, k, v)
+        y_linear = linear_attn(q, k, v, scale)
         y_softmax = _reference_softmax_attn(q, k, v)
 
         cos = torch.nn.functional.cosine_similarity(y_linear, y_softmax, dim=-1)
@@ -78,8 +83,9 @@ class TestLinearAttention:
 
         # v = identity -> output is attention scores
         v = torch.eye(T, D).unsqueeze(1).expand(B, T, H, D)
+        scale = torch.ones(H)
 
-        attn_linear = linear_attn(q, k, v)
+        attn_linear = linear_attn(q, k, v, scale)
         attn_softmax = _reference_softmax_attn(q, k, v)
 
         k = 3
