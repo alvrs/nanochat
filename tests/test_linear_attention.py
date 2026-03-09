@@ -70,6 +70,32 @@ class TestLinearAttention:
         cos = torch.nn.functional.cosine_similarity(y_linear, y_softmax, dim=-1)
         cos_mean = cos.mean().item()
         assert cos_mean > 0.8
+    
+    def test_attention_pattern_similarity(self):
+        B, T, H, D = 2, 64, 4, 64
+        q = torch.rand(B, T, H, D)
+        k = torch.randn(B, T, H, D)
+
+        # v = identity -> output is attention scores
+        v = torch.eye(T, D).unsqueeze(1).expand(B, T, H, D)
+
+        attn_linear = _linear_attn(q, k, v)
+        attn_softmax = _reference_softmax_attn(q, k, v)
+
+        k = 3
+        top_linear = attn_linear.topk(k).indices
+        top_softmax = attn_softmax.topk(k).indices
+        matches = top_linear == top_softmax
+        num_matches = matches.sum(dim=-1)
+        mean_matches = num_matches.mean(dtype=torch.float32).item()
+
+        assert mean_matches > k - 0.1
+
+
+
+
+
+
 
 
 
