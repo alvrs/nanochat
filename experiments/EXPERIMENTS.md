@@ -12,9 +12,9 @@ Goal: Replace softmax attention with a linear attention variant while maintainin
 
 ### d12-linear-poly-v5
 
-- **Commit:**
-- **Change:** relu + ax+x^2+bx^4 + normalization (with a,b learnable params per head)
-- **Result:**
+- **Commit:** 8cab967
+- **Change:** relu + ax+x^2+bx^4 + normalization (with a,b learnable params per head, properly initialized to 1.0)
+- **Result:** Generation degenerates into single-token repetition (e.g. "France is is is is..."). Attention maps show diffuse distributions — later layers spread weight nearly uniformly across recent tokens, losing track of the prompt. Hypothesis: the polynomial can't produce sharp enough attention to select specific positions.
 
 ## Bug: params initialized with 0
 
