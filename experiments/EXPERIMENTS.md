@@ -8,25 +8,25 @@ Goal: Replace softmax attention with a linear attention variant while maintainin
 
 - **Commit:** 64a69c3c86eaa1dbea2cfb37515762af56e3ec28
 - **Change:** relu + x^2 + normalization
-- **Result:** Loss 2.91, qualitatively worse than reference
+- **Result:** Loss 2.91. Generation: "The capital of France is Paris, and the city of Paris is the capital of France. The city is located in the heart of the country, and the city is the capital of France"
 
 ### d12-linear-poly-v5
 
 - **Commit:** 8cab967
 - **Change:** relu + ax+x^2+bx^4 + normalization (with a,b learnable params per head, properly initialized to 1.0)
-- **Result:** Generation degenerates into single-token repetition (e.g. "France is is is is..."). Attention maps show diffuse distributions — later layers spread weight nearly uniformly across recent tokens, losing track of the prompt. Hypothesis: the polynomial can't produce sharp enough attention to select specific positions.
+- **Result:** Generation: "The capital of France is the capital of the French Republic of the country. The capital is the capital of the French Republic of the country. The capital is the capital of the French Republic". Repetitive phrase loops, but no single-token degeneration (previous results showing "is is is..." were caused by a missing KV cache fallback in the engine).
 
 ### d12-linear-sqrt-v2
 
 - **Commit:** 8684ca1
 - **Change:** simpler linear attn: x^3 / sqrt(T) (no relu, no normalization), from https://arxiv.org/abs/2410.18613
-- **Result:** Loss 2.86 (BPB 0.877), slightly better than poly variants. Still degenerates into repetition during generation ("France France ée ée... disease disease disease"). Attention maps show unnormalized weights with strong recency bias — last token attends almost exclusively to recent positions, creating a feedback loop that locks onto repeated tokens.
+- **Result:** Loss 2.86 (BPB 0.877), slightly better than poly variants. Generation produces empty/near-empty output — the x^3 / sqrt(T) kernel produces near-zero attention weights that collapse the output.
 
 ### d12-relu-sq
 
 - **Commit:** 45707eb
 - **Change:** relu(x)^2 feature map on both Q and K (from https://arxiv.org/abs/2006.16236), with row-wise normalization of the attention matrix
-- **Result:** Still degenerates into single-token repetition ("the the the the...", "gold gold gold..."). The model latches onto a plausible first token and repeats it indefinitely. 
+- **Result:** Generation: "The capital of France is the capital of France. It is the capital of the country of France. The capital of France is the capital of France. The capital of France is the capital". Repetitive phrase loops, but no single-token degeneration (previous results showing "the the the..." were caused by a missing KV cache fallback in the engine).
 
 ## Bug: params initialized with 0
 
