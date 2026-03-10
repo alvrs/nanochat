@@ -64,29 +64,22 @@ def capture_attn():
     finally:
         _attn_capture = None
 
-def linear_attn(q, k, v, eps=1e-6):
+def linear_attn(q, k, v):
     q, k, v = q.transpose(1,2), k.transpose(1,2), v.transpose(1,2) # (B, T, H, D) -> (B, H, T, D)
+    scale = q.size(-1) ** -0.5
+    attn = torch.matmul(q, k.transpose(-2,-1)) * scale
 
-    # Feature map: relu(x)^2
-    # from https://arxiv.org/abs/2006.16236
-    q = F.relu(q).square() + eps
-    k = F.relu(k).square() + eps
-    attn = torch.matmul(q, k.transpose(-2, -1))
+    T = q.size(2) # number of tokens
+    TT = torch.ones(T, T, device=q.device, dtype=torch.bool) # TxT matrix filled with True
+    mask = torch.triu(TT, diagonal=1) # main diagonal and everything below becomes false
+    attn = attn.masked_fill(mask, float('-inf'))
 
-    # Apply causal mask (every "future query" result becomes 0)
-    T = q.size(2)
-    TT = torch.ones(T, T, device=q.device, dtype=torch.bool)
-    mask = torch.triu(TT, diagonal=1)
-    attn = attn.masked_fill(mask, 0)
-
-    # Normalize rows
-    attn = attn / attn.sum(dim=-1, keepdim=True).clamp(min=eps)
+    attn = torch.softmax(attn, dim=-1)
 
     # Capture attn for debugging
     if _attn_capture is not None:
         _attn_capture.append(attn.detach().cpu().float())
 
-    # Apply attention to value tensor
     y = torch.matmul(attn, v)
 
-    return y.transpose(1,2) # (B, H, T, D) -> (B, T, H, D)
+    return y.transpose(1, 2) # -> (B, T, H, D)
