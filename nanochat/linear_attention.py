@@ -80,8 +80,8 @@ def linear_attn(q, k, v, poly_coeffs):
     # to allow each head to decide how peaked the attention distribution should be
     # to emulate the softmax/exp expressiveness
     attn = torch.relu(attn)
-    coeffs = poly_coeffs.to(attn.dtype).view(3, 1, -1, 1, 1) # (3, 1, H, 1, 1)
-    attn = coeffs[0] * attn + coeffs[1] * attn.pow(2) + coeffs[2] * attn.pow(4)
+    coeffs = poly_coeffs.abs().to(attn.dtype).view(2, 1, -1, 1, 1) # (2, 1, H, 1, 1)
+    attn = coeffs[0] * attn + attn.pow(2) + coeffs[1] * attn.pow(4) # fix x^2, allow learning ratio of x, x^4
 
     # Normalize to get rows that sum to 1
     sums = torch.sum(attn, dim=-1, keepdim=True)

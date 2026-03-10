@@ -84,7 +84,7 @@ class CausalSelfAttention(nn.Module):
         self.attention_type = config.attention_type
 
         if self.attention_type == "linear":
-            self.attention_poly = nn.Parameter(torch.ones(3, self.n_head))
+            self.attention_poly = nn.Parameter(torch.ones(2, self.n_head))
 
             assert self.n_head == self.n_kv_head, "TODO: GQA not implemented"
 

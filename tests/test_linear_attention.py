@@ -11,7 +11,7 @@ class TestLinearAttention:
         q = torch.randn(B, T, H, D)
         k = torch.randn(B, T, H, D)
         v = torch.randn(B, T, H, D)
-        attention_poly = torch.ones(3, H)
+        attention_poly = torch.ones(2, H)
 
         y = linear_attn(q, k, v, attention_poly)
 
@@ -24,7 +24,7 @@ class TestLinearAttention:
         q = torch.randn(B, T, H, D, requires_grad=True)
         k = torch.randn(B, T, H, D, requires_grad=True)
         v = torch.randn(B, T, H, D, requires_grad=True)
-        attention_poly = torch.ones(3, H, requires_grad=True)
+        attention_poly = torch.ones(2, H, requires_grad=True)
 
         y = linear_attn(q, k, v, attention_poly)
         loss = y.sum()
@@ -43,7 +43,7 @@ class TestLinearAttention:
         k = torch.randn(B, T, H, D)
         v = torch.zeros(B, T, H, D)
         v[:, -1, :, :] = 1.0
-        attention_poly = torch.ones(3, H)
+        attention_poly = torch.ones(2, H)
 
         y = linear_attn(q, k, v, attention_poly)
 
@@ -54,7 +54,7 @@ class TestLinearAttention:
         q = torch.randn(B, T, H, D)
         k = torch.randn(B, T, H, D)
         v = torch.ones(B, T, H, D)
-        attention_poly = torch.ones(3, H)
+        attention_poly = torch.ones(2, H)
 
         y = linear_attn(q, k, v, attention_poly)
 
@@ -67,7 +67,7 @@ class TestLinearAttention:
         q = torch.randn(B, T, H, D)
         k = torch.randn(B, T, H, D)
         v = torch.randn(B, T, H, D)
-        attention_poly = torch.ones(3, H)
+        attention_poly = torch.ones(2, H)
 
         y_linear = linear_attn(q, k, v, attention_poly)
         y_softmax = _reference_softmax_attn(q, k, v)
@@ -83,7 +83,7 @@ class TestLinearAttention:
 
         # v = identity -> output is attention scores
         v = torch.eye(T, D).unsqueeze(1).expand(B, T, H, D)
-        attention_poly = torch.ones(3, H)
+        attention_poly = torch.ones(2, H)
 
         attn_linear = linear_attn(q, k, v, attention_poly)
         attn_softmax = _reference_softmax_attn(q, k, v)
