@@ -83,9 +83,9 @@ else
 fi
 
 # d12 model
-torchrun --standalone --nproc_per_node=2 -m scripts.base_train -- --depth=$DEPTH --target-param-data-ratio=9.5 --device-batch-size=16 --fp8 --run=$WANDB_RUN --window-pattern L --save-every=1000 --attention-type=$ATTN_TYPE $MODEL_TAG_FLAG
+torchrun --standalone --nproc_per_node=4 -m scripts.base_train -- --depth=$DEPTH --target-param-data-ratio=9.5 --device-batch-size=16 --fp8 --run=$WANDB_RUN --window-pattern L --save-every=1000 --attention-type=$ATTN_TYPE $MODEL_TAG_FLAG
 # evaluate the model: CORE metric, BPB on train/val, and draw samples
-torchrun --standalone --nproc_per_node=2 -m scripts.base_eval -- --device-batch-size=16 $MODEL_TAG_FLAG
+torchrun --standalone --nproc_per_node=4 -m scripts.base_eval -- --device-batch-size=16 $MODEL_TAG_FLAG
 
 # -----------------------------------------------------------------------------
 # SFT (teach the model conversation special tokens, tool use, multiple choice)
