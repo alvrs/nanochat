@@ -192,29 +192,40 @@ class Engine:
 
         # 1) Run a batch 1 prefill of the prompt tokens
         m = self.model.config
-        kv_model_kwargs = {"num_heads": m.n_kv_head, "head_dim": m.n_embd // m.n_head, "num_layers": m.n_layer}
-        kv_cache_prefill = KVCache(
-            batch_size=1,
-            seq_len=len(tokens),
-            device=device,
-            dtype=dtype,
-            **kv_model_kwargs,
-        )
+
+        # TODO: add KV cache support for linear attention
+        use_kv_cache = m.attention_type != "linear"
+
+        kv_cache_prefill = None
+        if use_kv_cache:
+            kv_model_kwargs = {"num_heads": m.n_kv_head, "head_dim": m.n_embd // m.n_head, "num_layers": m.n_layer}
+            kv_cache_prefill = KVCache(
+                batch_size=1,
+                seq_len=len(tokens),
+                device=device,
+                dtype=dtype,
+                **kv_model_kwargs,
+            )
+
         ids = torch.tensor([tokens], dtype=torch.long, device=device)
+
         logits = self.model.forward(ids, kv_cache=kv_cache_prefill)
         logits = logits[:, -1, :].expand(num_samples, -1)  # (num_samples, vocab_size)
 
-        # 2) Replicate the KV cache for each sample/row
-        kv_length_hint = (len(tokens) + max_tokens) if max_tokens is not None else self.model.config.sequence_len
-        kv_cache_decode = KVCache(
-            batch_size=num_samples,
-            seq_len=kv_length_hint,
-            device=device,
-            dtype=dtype,
-            **kv_model_kwargs,
-        )
-        kv_cache_decode.prefill(kv_cache_prefill)
-        del kv_cache_prefill # no need to keep this memory around
+
+        kv_cache_decode = None
+        if use_kv_cache:
+            # 2) Replicate the KV cache for each sample/row
+            kv_length_hint = (len(tokens) + max_tokens) if max_tokens is not None else self.model.config.sequence_len
+            kv_cache_decode = KVCache(
+                batch_size=num_samples,
+                seq_len=kv_length_hint,
+                device=device,
+                dtype=dtype,
+                **kv_model_kwargs, # pyright: ignore[reportPossiblyUnboundVariable]
+            )
+            kv_cache_decode.prefill(kv_cache_prefill)
+            del kv_cache_prefill # no need to keep this memory around
 
         # 3) Initialize states for each sample
         row_states = [RowState(tokens.copy()) for _ in range(num_samples)]
@@ -270,8 +281,13 @@ class Engine:
             num_generated += 1
 
             # Prepare logits for next iteration
-            ids = torch.tensor(token_column, dtype=torch.long, device=device).unsqueeze(1)
-            logits = self.model.forward(ids, kv_cache=kv_cache_decode)[:, -1, :]  # (B, vocab_size)
+            if use_kv_cache:
+                ids = torch.tensor(token_column, dtype=torch.long, device=device).unsqueeze(1)
+                logits = self.model.forward(ids, kv_cache=kv_cache_decode)[:, -1, :]  # (B, vocab_size)
+            else:
+                ids = torch.tensor([s.current_tokens for s in row_states], dtype=torch.long, device=device)
+                logits = self.model.forward(ids)[:, -1, :]  # (B, vocab_size)
+                
 
     def generate_batch(self, tokens, num_samples=1, **kwargs):
         """
