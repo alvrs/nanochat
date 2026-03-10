@@ -10,6 +10,16 @@ Goal: Replace softmax attention with a linear attention variant while maintainin
 - **Change:** relu + x^2 + normalization
 - **Result:** Loss 2.91, qualitatively worse than reference
 
+### d12-linear-poly-v4
+
+- **Commit:**
+- **Change:** relu + ax+x^2+bx^4 + normalization (with a,b learnable params per head)
+- **Result:**
+
+## Bug: params initialized with 0
+
+The following experiments all had a bug where the parameters weren't actually initialized to 1, so they weights didn't "collapse" to 0 but rather were initialized with 0 and were stuck there. This was fixed in e48f8c1071577932f63127c68ac61388e02a0b63.
+
 ### d12-linear-scale
 
 - **Commit:** f81df784770d01c32f274a70cbe6295988c96a53
@@ -33,9 +43,3 @@ Goal: Replace softmax attention with a linear attention variant while maintainin
 - **Commits:** 6794779 (constrain coefficients), 9808190 (move coeffs to own optimizer group)
 - **Change:** Switched to ax+x^2+bx^4 with only two learnable params per head, fixing x^2; also moved coefficients to separate optimizer group
 - **Result:** a,b collapsed to 0, leaving only x^2, loss back to 2.92 (matches initial x^2-only result)
-
-### d12-linear-poly-v4
-
-- **Commit:**
-- **Change:** fix x^4 instead
-- **Result:**

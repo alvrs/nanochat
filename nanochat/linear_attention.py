@@ -81,7 +81,7 @@ def linear_attn(q, k, v, poly_coeffs):
     # to emulate the softmax/exp expressiveness
     attn = torch.relu(attn)
     coeffs = poly_coeffs.abs().to(attn.dtype).view(2, 1, -1, 1, 1) # (2, 1, H, 1, 1)
-    attn = coeffs[0] * attn + coeffs[1] * attn.pow(2) + attn.pow(4) # fix x^4, allow learning ratio of x, x^2
+    attn = coeffs[0] * attn + attn.pow(2) + coeffs[1] * attn.pow(4) # fix x^2, allow learning ratio of x, x^4
 
     # Normalize to get rows that sum to 1
     sums = torch.sum(attn, dim=-1, keepdim=True)
