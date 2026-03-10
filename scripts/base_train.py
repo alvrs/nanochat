@@ -574,11 +574,6 @@ while True:
             "train/mfu": mfu,
             "train/epoch": epoch,
         }
-        # Log attention polynomial coefficients if they exist
-        if hasattr(orig_model.transformer.h[0].attn, 'attention_poly'):
-            coeffs = torch.stack([block.attn.attention_poly for block in orig_model.transformer.h])
-            log_data["coeffs/0_mean"] = coeffs[:, 0].mean().item()
-            log_data["coeffs/1_mean"] = coeffs[:, 1].mean().item()
         wandb_run.log(log_data)
 
     # state update

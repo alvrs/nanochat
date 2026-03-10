@@ -84,10 +84,6 @@ class CausalSelfAttention(nn.Module):
         self.attention_type = config.attention_type
 
         if self.attention_type == "linear":
-            # Note: this doesn't actually set the data, only the shape
-            # Data is set in init_weights
-            self.attention_poly = nn.Parameter(torch.ones(2, self.n_head))
-
             assert self.n_head == self.n_kv_head, "TODO: GQA not implemented"
 
 
@@ -132,7 +128,7 @@ class CausalSelfAttention(nn.Module):
                     kv_cache.advance(T)
         elif self.attention_type == "linear":
             # TODO: add support for kv_cache
-            y = linear_attn(q, k, v, self.attention_poly)
+            y = linear_attn(q, k, v)
 
         # Re-assemble the heads and project back to residual stream
         y = y.contiguous().view(B, T, -1)
@@ -250,8 +246,6 @@ class GPT(nn.Module):
         for block in self.transformer.h:
             if block.attn.ve_gate is not None:
                 torch.nn.init.zeros_(block.attn.ve_gate.weight)
-            if hasattr(block.attn, 'attention_poly'):
-                block.attn.attention_poly.fill_(1.0)
 
         # Rotary embeddings
         head_dim = self.config.n_embd // self.config.n_head
