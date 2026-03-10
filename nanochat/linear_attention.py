@@ -64,11 +64,14 @@ def capture_attn():
     finally:
         _attn_capture = None
 
-def linear_attn(q, k, v):
-    # Same as _reference_softmax_attn
+def linear_attn(q, k, v, eps=1e-6):
     q, k, v = q.transpose(1,2), k.transpose(1,2), v.transpose(1,2) # (B, T, H, D) -> (B, H, T, D)
-    dk_scale = q.size(-1) ** -0.5
-    attn = torch.matmul(q, k.transpose(-2, -1)) * dk_scale
+
+    # Feature map: relu(x)^2
+    # from https://arxiv.org/abs/2006.16236
+    q = F.relu(q).square() + eps
+    k = F.relu(k).square() + eps
+    attn = torch.matmul(q, k.transpose(-2, -1))
 
     # Apply causal mask (every "future query" result becomes 0)
     T = q.size(2)
@@ -76,9 +79,8 @@ def linear_attn(q, k, v):
     mask = torch.triu(TT, diagonal=1)
     attn = attn.masked_fill(mask, 0)
 
-    # Softmax replacement: 1/sqrt(len(T)) * x^3
-    # from https://arxiv.org/abs/2410.18613
-    attn = attn.pow(3) * T ** -0.5
+    # Normalize rows
+    attn = attn / attn.sum(dim=-1, keepdim=True).clamp(min=eps)
 
     # Capture attn for debugging
     if _attn_capture is not None:
