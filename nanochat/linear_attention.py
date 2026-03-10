@@ -66,15 +66,19 @@ def capture_attn():
 
 def linear_attn(q, k, v):
     q, k, v = q.transpose(1,2), k.transpose(1,2), v.transpose(1,2) # (B, T, H, D) -> (B, H, T, D)
-    scale = q.size(-1) ** -0.5
-    attn = torch.matmul(q, k.transpose(-2,-1)) * scale
 
+    # Attention matrix
+    attn = torch.matmul(q, k.transpose(-2,-1))
+
+    # Causal mask
     T = q.size(2) # number of tokens
     TT = torch.ones(T, T, device=q.device, dtype=torch.bool) # TxT matrix filled with True
     mask = torch.triu(TT, diagonal=1) # main diagonal and everything below becomes false
-    attn = attn.masked_fill(mask, float('-inf'))
+    attn = attn.masked_fill(mask, 0.0)
 
-    attn = torch.softmax(attn, dim=-1)
+    # Softmax replacement 
+    attn = attn.square()
+    attn = attn / attn.sum(dim=-1, keepdim=True).clamp(min=1e-6)
 
     # Capture attn for debugging
     if _attn_capture is not None:
