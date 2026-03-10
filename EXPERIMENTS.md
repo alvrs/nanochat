@@ -10,7 +10,7 @@ Goal: Replace softmax attention with a linear attention variant while maintainin
 - **Change:** relu + x^2 + normalization
 - **Result:** Loss 2.91, qualitatively worse than reference
 
-### d12-linear-poly-v4
+### d12-linear-poly-v5
 
 - **Commit:**
 - **Change:** relu + ax+x^2+bx^4 + normalization (with a,b learnable params per head)
