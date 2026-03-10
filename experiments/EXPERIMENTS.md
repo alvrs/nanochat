@@ -16,11 +16,11 @@ Goal: Replace softmax attention with a linear attention variant while maintainin
 - **Change:** relu + ax+x^2+bx^4 + normalization (with a,b learnable params per head, properly initialized to 1.0)
 - **Result:** Generation degenerates into single-token repetition (e.g. "France is is is is..."). Attention maps show diffuse distributions — later layers spread weight nearly uniformly across recent tokens, losing track of the prompt. Hypothesis: the polynomial can't produce sharp enough attention to select specific positions.
 
-### d12-linear-sqrt
+### d12-linear-sqrt-v2
 
-- **Commit:**
-- **Change:** simpler linear attn: x^3\*sqrt(T) (no relu, no normalization to 1), from https://arxiv.org/abs/2410.18613
-- **Result:**
+- **Commit:** 8684ca1
+- **Change:** simpler linear attn: x^3 / sqrt(T) (no relu, no normalization), from https://arxiv.org/abs/2410.18613
+- **Result:** Loss 2.86 (BPB 0.877), slightly better than poly variants. Still degenerates into repetition during generation ("France France ée ée... disease disease disease"). Attention maps show unnormalized weights with strong recency bias — last token attends almost exclusively to recent positions, creating a feedback loop that locks onto repeated tokens.
 
 ## Bug: params initialized with 0
 
