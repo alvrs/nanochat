@@ -84,6 +84,8 @@ class CausalSelfAttention(nn.Module):
         self.attention_type = config.attention_type
 
         if self.attention_type == "linear":
+            # Note: this doesn't actually set the data, only the shape
+            # Data is set in init_weights
             self.attention_poly = nn.Parameter(torch.ones(2, self.n_head))
 
             assert self.n_head == self.n_kv_head, "TODO: GQA not implemented"
@@ -248,6 +250,8 @@ class GPT(nn.Module):
         for block in self.transformer.h:
             if block.attn.ve_gate is not None:
                 torch.nn.init.zeros_(block.attn.ve_gate.weight)
+            if hasattr(block.attn, 'attention_poly'):
+                block.attn.attention_poly.fill_(1.0)
 
         # Rotary embeddings
         head_dim = self.config.n_embd // self.config.n_head
