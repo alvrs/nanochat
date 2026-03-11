@@ -28,6 +28,12 @@ Goal: Replace softmax attention with a linear attention variant while maintainin
 - **Change:** relu(x)^2 feature map on both Q and K (from https://arxiv.org/abs/2006.16236), with row-wise normalization of the attention matrix
 - **Result:** Generation: "The capital of France is the capital of France. It is the capital of the country of France. The capital of France is the capital of France. The capital of France is the capital". Repetitive phrase loops, but no single-token degeneration (previous results showing "the the the..." were caused by a missing KV cache fallback in the engine).
 
+### d12-simple-x2
+
+- **Commit:** 829eec08
+- **Change**: x^2, then row normalization to 1
+- **Result**: Generation: "The capital of France is the capital of the country. It is the capital of the country. The capital" - not great
+
 ## Bug: params initialized with 0
 
 The following experiments all had a bug where the parameters weren't actually initialized to 1, so they weights didn't "collapse" to 0 but rather were initialized with 0 and were stuck there. This was fixed in e48f8c1071577932f63127c68ac61388e02a0b63.
