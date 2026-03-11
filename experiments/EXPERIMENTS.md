@@ -34,6 +34,12 @@ Goal: Replace softmax attention with a linear attention variant while maintainin
 - **Change**: x^2, then row normalization to 1
 - **Result**: Generation: "The capital of France is the capital of the country. It is the capital of the country. The capital" - not great
 
+### d12-simple-relu
+
+- **Commit:** 95c2307
+- **Change**: relu, then row normalization to 1
+- **Result**: Generation: "The capital of France is the capital of the world, and it is the largest city in the world." - factually wrong but kind of better english than the x2 version
+
 ## Bug: params initialized with 0
 
 The following experiments all had a bug where the parameters weren't actually initialized to 1, so they weights didn't "collapse" to 0 but rather were initialized with 0 and were stuck there. This was fixed in e48f8c1071577932f63127c68ac61388e02a0b63.
