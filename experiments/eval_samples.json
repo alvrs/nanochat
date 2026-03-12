@@ -215,5 +215,12 @@
     "desc": "relu(1+x+x^2/2+x^3/6)",
     "prompt": "The capital of France is",
     "completion": " Important realities Important Important Cell, beingTraditional Importantjour Importantpro ImportantA greatAA Important Symptomsumble aboutumble aboutumbleirtational selectionational selectionumbleationalumble"
+  },
+  {
+    "model_tag": "d12-taylor-relu-v2",
+    "commit": "f57b452",
+    "desc": "attn*sqrt(d), then relu(1+x+x^2/2+x^3/6)",
+    "prompt": "The capital of France is",
+    "completion": " capital capital capital capital capital"
   }
 ]
