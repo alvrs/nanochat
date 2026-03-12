@@ -121,10 +121,9 @@ def main():
     fig1 = plot_attention_heatmaps(attn_maps, token_labels)
     fig2 = plot_last_token_attention(attn_maps, token_labels)
 
-    tag = args.save or args.model_tag or 'latest'
-    fig1.savefig(f"{tag}_heatmaps.png", dpi=150, bbox_inches="tight")
-    fig2.savefig(f"{tag}_last_token.png", dpi=150, bbox_inches="tight")
-    print(f"Saved to {tag}_heatmaps.png and {args.save}_last_token.png")
+    fig1.savefig(f"{args.model}/attn_viz_heatmaps.png", dpi=150, bbox_inches="tight")
+    fig2.savefig(f"{args.model}/attn_viz_last_token.png", dpi=150, bbox_inches="tight")
+    print(f"Saved to {args.model}/")
 
     plt.close("all")
 
