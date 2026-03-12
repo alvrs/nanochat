@@ -10,6 +10,7 @@ import argparse
 import base64
 import io
 import sys
+import os
 
 import torch
 import matplotlib
@@ -91,6 +92,7 @@ def main():
     parser.add_argument("--prompt", type=str, default="The capital of France is")
     parser.add_argument("--max-tokens", type=int, default=12)
     parser.add_argument("--device", type=str, default="cuda" if torch.cuda.is_available() else "cpu")
+    parser.add_argument("--output-dir", type=str, default=None, help="Directory to save images (default: <model_tag>/)")
     args = parser.parse_args()
 
     # Load model and tokenizer
@@ -121,9 +123,12 @@ def main():
     fig1 = plot_attention_heatmaps(attn_maps, token_labels)
     fig2 = plot_last_token_attention(attn_maps, token_labels)
 
-    fig1.savefig(f"{args.model}/attn_viz_heatmaps.png", dpi=150, bbox_inches="tight")
-    fig2.savefig(f"{args.model}/attn_viz_last_token.png", dpi=150, bbox_inches="tight")
-    print(f"Saved to {args.model}/")
+    output_dir = args.output_dir or args.model_tag
+    os.makedirs(output_dir, exist_ok=True)
+
+    fig1.savefig(f"{output_dir}/attn_viz_heatmaps.png", dpi=150, bbox_inches="tight")
+    fig2.savefig(f"{output_dir}/attn_viz_last_token.png", dpi=150, bbox_inches="tight")
+    print(f"Saved to {output_dir}/")
 
     plt.close("all")
 
