@@ -190,10 +190,16 @@ def run_sample(codebase_path, model_tag):
 def run_viz(codebase_path, model_tag):
     """Run attention visualization, saving images to experiments/<model_tag>/."""
     output_dir = os.path.join(REPO_ROOT, "experiments", model_tag)
+    # Always run the current tree's viz script (picks up fixes), but prepend
+    # the worktree to PYTHONPATH so `import nanochat` resolves to the commit's
+    # model/attention code.
+    viz_script = os.path.join(REPO_ROOT, "experiments", "visualize_attention.py")
+    env = os.environ.copy()
+    env["PYTHONPATH"] = codebase_path + os.pathsep + env.get("PYTHONPATH", "")
     result = subprocess.run(
-        [VENV_PYTHON, "-m", "experiments.visualize_attention",
+        [VENV_PYTHON, viz_script,
          "--model-tag", model_tag, "--prompt", PROMPT, "--output-dir", output_dir],
-        cwd=codebase_path, capture_output=True, text=True, timeout=300,
+        env=env, capture_output=True, text=True, timeout=300,
     )
     if result.returncode != 0:
         raise RuntimeError(result.stderr.strip().split("\n")[-1])
