@@ -38,6 +38,8 @@ EXPERIMENTS = [
     ("d12-taylor-relu",    "62a6e70", "relu(1+x+x^2/2+x^3/6)"),
     ("d12-taylor-relu-v2", "f57b452", "attn*sqrt(d), then relu(1+x+x^2/2+x^3/6)"),
     ("d12-taylor-relu-v3", "0c025b7", "relu(x+x^2/2+x^3/6)"), 
+    ("d12-relu-x3", "39a5f83", "relu(x^3)"), 
+    ("d12-relu-x5", "2939823", "relu(x^5)"), 
 ]
 
 PROMPT = "The capital of France is"
