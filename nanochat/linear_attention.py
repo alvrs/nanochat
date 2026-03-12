@@ -77,7 +77,7 @@ def linear_attn(q, k, v):
     attn = attn.masked_fill(mask, 0.0)
 
     # Softmax replacement 
-    attn = attn ** 4
+    attn = F.relu(1 + attn + (attn ** 2) / 2 + (attn ** 3) / 6)
     attn = attn / attn.sum(dim=-1, keepdim=True).clamp(min=1e-6)
 
     # Capture attn for debugging
