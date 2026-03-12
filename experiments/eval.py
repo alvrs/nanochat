@@ -28,14 +28,14 @@ VENV_PYTHON = os.path.join(REPO_ROOT, ".venv", "bin", "python")
 # Each entry: (model_tag, commit, description)
 EXPERIMENTS = [
     ("d12-reference",      None,      "baseline softmax (flash attn)"),
-    ("d12-reference-v2",   "06da7ce", "softmax via linear_attn codepath"),
-    ("d12-linear",         "f1673be", "relu + x^2 + normalization"),
-    ("d12-relu-sq",        "16ac89f", "relu(x)^2 feature map + row normalization"),
-    ("d12-linear-poly-v5", "08920f5", "relu + ax+x^2+bx^4 (learnable a,b)"),
-    ("d12-simple-x2",      "03d7f3e", "x^2 + normalization"),
-    ("d12-simple-relu",    "0653866", "relu + normalization"),
-    ("d12-simple-x4",      "3d27b33", "x^4 + normalization"),
-    ("d12-taylor-relu",    "bc65c53", "relu(1+x+x^2/2+x^3/6)")
+    ("d12-reference-v2",   "d910b6a", "softmax via linear_attn codepath"),
+    ("d12-linear",         "a9715b0", "relu + x^2 + normalization"),
+    ("d12-relu-sq",        "19cdf8f", "relu(x)^2 feature map + row normalization"),
+    ("d12-linear-poly-v5", "56253f1", "relu + ax+x^2+bx^4 (learnable a,b)"),
+    ("d12-simple-x2",      "7e9eebc", "x^2 + normalization"),
+    ("d12-simple-relu",    "2331455", "relu + normalization"),
+    ("d12-simple-x4",      "e97b5d5", "x^4 + normalization"),
+    ("d12-taylor-relu",    "62a6e70", "relu(1+x+x^2/2+x^3/6)")
 
 ]
 
