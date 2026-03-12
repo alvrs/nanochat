@@ -58,5 +58,11 @@
     "desc": "attn*sqrt(d), then relu(1+x+x^2/2+x^3/6)",
     "prompt": "The capital of France is",
     "completion": " capital capital capital capital capital"
+  },
+  "d12-taylor-relu-v3": {
+    "commit": "0c025b7",
+    "desc": "relu(x+x^2/2+x^3/6)",
+    "prompt": "The capital of France is",
+    "completion": " the capital of the French Republic, and the capital of the Republic of France. The capital of the Republic of France is the capital of the Republic of the Netherlands"
   }
 }

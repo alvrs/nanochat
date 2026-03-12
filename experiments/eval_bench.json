@@ -278,5 +278,33 @@
       "boolq": 0.5999999642372131,
       "bigbench_language_identification": 0.29999998211860657
     }
+  },
+  "d12-taylor-relu-v3": {
+    "commit": "0c025b7",
+    "core_metric": 0.10748816164286451,
+    "task_results": {
+      "hellaswag_zeroshot": 0.32999998331069946,
+      "jeopardy": 0.009999999776482582,
+      "bigbench_qa_wikidata": 0.22999998927116394,
+      "arc_easy": 0.5299999713897705,
+      "arc_challenge": 0.23999999463558197,
+      "copa": 0.5399999618530273,
+      "commonsense_qa": 0.29999998211860657,
+      "piqa": 0.6100000143051147,
+      "openbook_qa": 0.26999998092651367,
+      "lambada_openai": 0.3199999928474426,
+      "hellaswag": 0.29999998211860657,
+      "winograd": 0.5199999809265137,
+      "winogrande": 0.5799999833106995,
+      "bigbench_dyck_languages": 0.04999999701976776,
+      "agi_eval_lsat_ar": 0.32999998331069946,
+      "bigbench_cs_algorithms": 0.35999998450279236,
+      "bigbench_operators": 0.07000000029802322,
+      "bigbench_repeat_copy_logic": 0.0,
+      "squad": 0.07999999821186066,
+      "coqa": 0.12999999523162842,
+      "boolq": 0.4399999976158142,
+      "bigbench_language_identification": 0.3100000023841858
+    }
   }
 }
