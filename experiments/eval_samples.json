@@ -1,226 +1,62 @@
-[
-  {
-    "model_tag": "d12-reference",
+{
+  "d12-reference": {
     "commit": null,
     "desc": "baseline softmax (flash attn)",
     "prompt": "The capital of France is",
     "completion": " the city of Paris, and it is the capital of the world. The capital of France is the city of Paris, and it is the capital of the world"
   },
-  {
-    "model_tag": "d12-reference-v2",
-    "commit": "06da7ce",
-    "desc": "softmax via linear_attn codepath",
-    "prompt": "The capital of France is",
-    "completion": " the capital of the French Republic, and the capital of the French Republic. The capital of the French Republic is the capital of the French Republic. The capital of"
-  },
-  {
-    "model_tag": "d12-linear",
-    "commit": "f1673be",
-    "desc": "relu + x^2 + normalization",
-    "prompt": "The capital of France is",
-    "completion": " Paris, and the city of Paris is the capital of France. The city is located in the heart of the country, and the city is the capital of France"
-  },
-  {
-    "model_tag": "d12-relu-sq",
-    "commit": "16ac89f",
-    "desc": "relu(x)^2 feature map + row normalization",
-    "prompt": "The capital of France is",
-    "completion": " the capital of France. It is the capital of the country of France. The capital of France is the capital of France. The capital of France is the capital"
-  },
-  {
-    "model_tag": "d12-linear-poly-v5",
-    "commit": "08920f5",
-    "desc": "relu + ax+x^2+bx^4 (learnable a,b)",
-    "prompt": "The capital of France is",
-    "completion": " the capital of the French Republic of the country. The capital is the capital of the French Republic of the country. The capital is the capital of the French Republic"
-  },
-  {
-    "model_tag": "d12-simple-x2",
-    "commit": "03d7f3e",
-    "desc": "x^2 + normalization",
-    "prompt": "The capital of France is",
-    "completion": " the capital of the country. It is the capital of the country. The capital of France is the capital of the country. The capital of France is the capital"
-  },
-  {
-    "model_tag": "d12-simple-relu",
-    "commit": "0653866",
-    "desc": "relu + normalization",
-    "prompt": "The capital of France is",
-    "completion": " the capital of the world, and it is the largest city in the world. The capital of France is the capital of the world, and it is the largest"
-  },
-  {
-    "model_tag": "d12-simple-x4",
-    "commit": "3d27b33",
-    "desc": "x^4 + normalization",
-    "prompt": "The capital of France is",
-    "completion": " Paris. The capital of France is Paris. The capital of France is Paris. The capital of France is Paris. The capital of France is Paris. The capital"
-  },
-  {
-    "model_tag": "d12-taylor-relu",
-    "commit": "bc65c53",
-    "desc": "relu(1+x+x^2/2+x^3/6)",
-    "prompt": "The capital of France is",
-    "completion": " Important realities Important Important Cell, beingTraditional Importantjour Importantpro ImportantA greatAA Important Symptomsumble aboutumble aboutumbleirtational selectionational selectionumbleationalumble"
-  },
-  {
-    "model_tag": "d12-reference",
-    "commit": null,
-    "desc": "baseline softmax (flash attn)",
-    "prompt": "The capital of France is",
-    "completion": " the city of Paris, and it is the capital of the world. The capital of France is the city of Paris, and it is the capital of the world"
-  },
-  {
-    "model_tag": "d12-reference-v2",
-    "commit": "06da7ce",
-    "desc": "softmax via linear_attn codepath",
-    "prompt": "The capital of France is",
-    "completion": " the capital of the French Republic, and the capital of the French Republic. The capital of the French Republic is the capital of the French Republic. The capital of"
-  },
-  {
-    "model_tag": "d12-linear",
-    "commit": "f1673be",
-    "desc": "relu + x^2 + normalization",
-    "prompt": "The capital of France is",
-    "completion": " Paris, and the city of Paris is the capital of France. The city is located in the heart of the country, and the city is the capital of France"
-  },
-  {
-    "model_tag": "d12-relu-sq",
-    "commit": "16ac89f",
-    "desc": "relu(x)^2 feature map + row normalization",
-    "prompt": "The capital of France is",
-    "completion": " the capital of France. It is the capital of the country of France. The capital of France is the capital of France. The capital of France is the capital"
-  },
-  {
-    "model_tag": "d12-linear-poly-v5",
-    "commit": "08920f5",
-    "desc": "relu + ax+x^2+bx^4 (learnable a,b)",
-    "prompt": "The capital of France is",
-    "completion": " the capital of the French Republic of the country. The capital is the capital of the French Republic of the country. The capital is the capital of the French Republic"
-  },
-  {
-    "model_tag": "d12-simple-x2",
-    "commit": "03d7f3e",
-    "desc": "x^2 + normalization",
-    "prompt": "The capital of France is",
-    "completion": " the capital of the country. It is the capital of the country. The capital of France is the capital of the country. The capital of France is the capital"
-  },
-  {
-    "model_tag": "d12-simple-relu",
-    "commit": "0653866",
-    "desc": "relu + normalization",
-    "prompt": "The capital of France is",
-    "completion": " the capital of the world, and it is the largest city in the world. The capital of France is the capital of the world, and it is the largest"
-  },
-  {
-    "model_tag": "d12-reference",
-    "commit": null,
-    "desc": "baseline softmax (flash attn)",
-    "prompt": "The capital of France is",
-    "completion": " the city of Paris, and it is the capital of the world. The capital of France is the city of Paris, and it is the capital of the world"
-  },
-  {
-    "model_tag": "d12-reference-v2",
-    "commit": "06da7ce",
-    "desc": "softmax via linear_attn codepath",
-    "prompt": "The capital of France is",
-    "completion": " the capital of the French Republic, and the capital of the French Republic. The capital of the French Republic is the capital of the French Republic. The capital of"
-  },
-  {
-    "model_tag": "d12-reference",
-    "commit": null,
-    "desc": "baseline softmax (flash attn)",
-    "prompt": "The capital of France is",
-    "completion": " the city of Paris, and it is the capital of the world. The capital of France is the city of Paris, and it is the capital of the world"
-  },
-  {
-    "model_tag": "d12-reference-v2",
+  "d12-reference-v2": {
     "commit": "d910b6a",
     "desc": "softmax via linear_attn codepath",
     "prompt": "The capital of France is",
     "completion": " the capital of the French Republic, and the capital of the French Republic. The capital of the French Republic is the capital of the French Republic. The capital of"
   },
-  {
-    "model_tag": "d12-linear",
+  "d12-linear": {
     "commit": "a9715b0",
     "desc": "relu + x^2 + normalization",
     "prompt": "The capital of France is",
     "completion": " Paris, and the city of Paris is the capital of France. The city is located in the heart of the country, and the city is the capital of France"
   },
-  {
-    "model_tag": "d12-relu-sq",
+  "d12-relu-sq": {
     "commit": "19cdf8f",
     "desc": "relu(x)^2 feature map + row normalization",
     "prompt": "The capital of France is",
     "completion": " the capital of France. It is the capital of the country of France. The capital of France is the capital of France. The capital of France is the capital"
   },
-  {
-    "model_tag": "d12-reference",
-    "commit": null,
-    "desc": "baseline softmax (flash attn)",
-    "prompt": "The capital of France is",
-    "completion": " the city of Paris, and it is the capital of the world. The capital of France is the city of Paris, and it is the capital of the world"
-  },
-  {
-    "model_tag": "d12-reference-v2",
-    "commit": "d910b6a",
-    "desc": "softmax via linear_attn codepath",
-    "prompt": "The capital of France is",
-    "completion": " the capital of the French Republic, and the capital of the French Republic. The capital of the French Republic is the capital of the French Republic. The capital of"
-  },
-  {
-    "model_tag": "d12-linear",
-    "commit": "a9715b0",
-    "desc": "relu + x^2 + normalization",
-    "prompt": "The capital of France is",
-    "completion": " Paris, and the city of Paris is the capital of France. The city is located in the heart of the country, and the city is the capital of France"
-  },
-  {
-    "model_tag": "d12-relu-sq",
-    "commit": "19cdf8f",
-    "desc": "relu(x)^2 feature map + row normalization",
-    "prompt": "The capital of France is",
-    "completion": " the capital of France. It is the capital of the country of France. The capital of France is the capital of France. The capital of France is the capital"
-  },
-  {
-    "model_tag": "d12-linear-poly-v5",
+  "d12-linear-poly-v5": {
     "commit": "56253f1",
     "desc": "relu + ax+x^2+bx^4 (learnable a,b)",
     "prompt": "The capital of France is",
     "completion": " the capital of the French Republic of the country. The capital is the capital of the French Republic of the country. The capital is the capital of the French Republic"
   },
-  {
-    "model_tag": "d12-simple-x2",
+  "d12-simple-x2": {
     "commit": "7e9eebc",
     "desc": "x^2 + normalization",
     "prompt": "The capital of France is",
     "completion": " the capital of the country. It is the capital of the country. The capital of France is the capital of the country. The capital of France is the capital"
   },
-  {
-    "model_tag": "d12-simple-relu",
+  "d12-simple-relu": {
     "commit": "2331455",
     "desc": "relu + normalization",
     "prompt": "The capital of France is",
     "completion": " the capital of the world, and it is the largest city in the world. The capital of France is the capital of the world, and it is the largest"
   },
-  {
-    "model_tag": "d12-simple-x4",
+  "d12-simple-x4": {
     "commit": "e97b5d5",
     "desc": "x^4 + normalization",
     "prompt": "The capital of France is",
     "completion": " Paris. The capital of France is Paris. The capital of France is Paris. The capital of France is Paris. The capital of France is Paris. The capital"
   },
-  {
-    "model_tag": "d12-taylor-relu",
+  "d12-taylor-relu": {
     "commit": "62a6e70",
     "desc": "relu(1+x+x^2/2+x^3/6)",
     "prompt": "The capital of France is",
     "completion": " Important realities Important Important Cell, beingTraditional Importantjour Importantpro ImportantA greatAA Important Symptomsumble aboutumble aboutumbleirtational selectionational selectionumbleationalumble"
   },
-  {
-    "model_tag": "d12-taylor-relu-v2",
+  "d12-taylor-relu-v2": {
     "commit": "f57b452",
     "desc": "attn*sqrt(d), then relu(1+x+x^2/2+x^3/6)",
     "prompt": "The capital of France is",
     "completion": " capital capital capital capital capital"
   }
-]
+}

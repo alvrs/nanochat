@@ -210,14 +210,14 @@ def run_bench(codebase_path, model_tag, max_per_task):
 # Results persistence
 # ---------------------------------------------------------------------------
 
-def append_json(path, entry):
-    """Append an entry to a JSON list file."""
+def upsert_json(path, key, entry):
+    """Insert or update an entry in a JSON dict file, keyed by *key*."""
     if os.path.exists(path):
         with open(path, "r") as f:
             data = json.load(f)
     else:
-        data = []
-    data.append(entry)
+        data = {}
+    data[key] = entry
     with open(path, "w") as f:
         json.dump(data, f, indent=2)
 
@@ -282,8 +282,8 @@ def main():
                 try:
                     completion = run_sample(codebase_path, model_tag)
                     print(f"  [sample] {completion}")
-                    append_json(samples_path, {
-                        "model_tag": model_tag, "commit": commit,
+                    upsert_json(samples_path, model_tag, {
+                        "commit": commit,
                         "desc": desc, "prompt": PROMPT, "completion": completion,
                     })
                 except Exception as e:
@@ -303,8 +303,8 @@ def main():
                     bench_result = run_bench(codebase_path, model_tag, args.max_per_task)
                     core = bench_result["core_metric"]
                     print(f"  [bench] CORE={core:.4f}")
-                    append_json(bench_path, {
-                        "model_tag": model_tag, "commit": commit,
+                    upsert_json(bench_path, model_tag, {
+                        "commit": commit,
                         "core_metric": core, "task_results": bench_result["results"],
                     })
                 except Exception as e:
