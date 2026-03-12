@@ -100,7 +100,7 @@ def main():
     print(f"Loaded model: {args.model_tag}")
 
     # Tokenize and generate
-    prompt_tokens = tokenizer.encode(args.prompt)
+    prompt_tokens = tokenizer(args.prompt, prepend="<|bos|>")
     print(f"Prompt: {args.prompt!r}")
 
     all_tokens = list(prompt_tokens)
