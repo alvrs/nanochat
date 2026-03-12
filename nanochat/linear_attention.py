@@ -68,8 +68,7 @@ def linear_attn(q, k, v):
     q, k, v = q.transpose(1,2), k.transpose(1,2), v.transpose(1,2) # (B, T, H, D) -> (B, H, T, D)
 
     # Attention matrix
-    scale = q.size(-1) ** -0.5
-    attn = torch.matmul(q, k.transpose(-2,-1)) * scale
+    attn = torch.matmul(q, k.transpose(-2,-1))
 
     # Causal mask
     T = q.size(2) # number of tokens
@@ -78,7 +77,7 @@ def linear_attn(q, k, v):
     attn = attn.masked_fill(mask, 0.0)
 
     # Softmax replacement 
-    attn = F.relu(1 + attn + (attn ** 2) / 2 + (attn ** 3) / 6)
+    attn = F.relu(attn + (attn ** 2) / 2 + (attn ** 3) / 6)
     attn = attn / attn.sum(dim=-1, keepdim=True).clamp(min=1e-6)
 
     # Capture attn for debugging
