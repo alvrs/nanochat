@@ -1,13 +1,15 @@
+from contextlib import contextmanager
+
 import torch
 import torch.nn.functional as F
 
 # =============================================================================
-# Reference softmax attention 
+# Reference softmax attention
 # =============================================================================
 def _reference_softmax_attn(q, k, v):
     """
     Softmax attention for reference
-    
+
     Args:
         q, k, v: Tensors of shape (B, T, H, D)
 
@@ -15,7 +17,7 @@ def _reference_softmax_attn(q, k, v):
         Output tensor of shape (B, T, H, D)
     """
 
-    # Input arrives in shape 
+    # Input arrives in shape
     #   B=Batch size,
     #   T=Time (number of tokens),
     #   H=Heads (number of attention heads),
@@ -51,6 +53,17 @@ def _reference_softmax_attn(q, k, v):
 
     return y.transpose(1, 2) # -> (B, T, H, D)
 
+# Allow capturing attention values for debugging
+_attn_capture = None
+@contextmanager
+def capture_attn():
+    global _attn_capture
+    _attn_capture = []
+    try:
+        yield _attn_capture
+    finally:
+        _attn_capture = None
+
 def linear_attn(q, k, v, degree=2):
     # Same as _reference_softmax_attn
     q, k, v = q.transpose(1,2), k.transpose(1,2), v.transpose(1,2) # (B, T, H, D) -> (B, H, T, D)
@@ -69,6 +82,10 @@ def linear_attn(q, k, v, degree=2):
     # Normalize to get rows that sum to 1
     sums = torch.sum(attn, dim=-1, keepdim=True)
     attn = attn / sums.clamp(min=1e-6)
+
+    # Capture attn for debugging
+    if _attn_capture is not None:
+        _attn_capture.append(attn.detach().cpu().float())
 
     # Apply attention to value tensor
     y = torch.matmul(attn, v)
