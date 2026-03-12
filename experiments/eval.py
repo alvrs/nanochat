@@ -236,6 +236,8 @@ def main():
                         help="Run DCLM CORE benchmark")
     parser.add_argument("--max-per-task", type=int, default=100,
                         help="Max examples per CORE task (default: 100)")
+    parser.add_argument("--model-tag", type=str, default=None,
+                        help="Run only this model tag (default: all)")
     args = parser.parse_args()
 
     if not (args.sample or args.viz or args.bench):
@@ -252,7 +254,15 @@ def main():
     samples_path = os.path.join(REPO_ROOT, "experiments", "eval_samples.json")
     bench_path = os.path.join(REPO_ROOT, "experiments", "eval_bench.json")
 
-    for model_tag, commit, desc in EXPERIMENTS:
+    experiments = EXPERIMENTS
+    if args.model_tag:
+        experiments = [(t, c, d) for t, c, d in EXPERIMENTS if t == args.model_tag]
+        if not experiments:
+            print(f"Unknown model tag: {args.model_tag}")
+            print(f"Available: {', '.join(t for t, _, _ in EXPERIMENTS)}")
+            sys.exit(1)
+
+    for model_tag, commit, desc in experiments:
         label = f"{model_tag} @ {commit or 'HEAD'}"
         print(f"--- {label} ({desc}) ---")
 
