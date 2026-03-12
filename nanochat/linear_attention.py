@@ -68,7 +68,8 @@ def linear_attn(q, k, v):
     q, k, v = q.transpose(1,2), k.transpose(1,2), v.transpose(1,2) # (B, T, H, D) -> (B, H, T, D)
 
     # Attention matrix
-    attn = torch.matmul(q, k.transpose(-2,-1))
+    scale = q.size(-1) ** -0.5
+    attn = torch.matmul(q, k.transpose(-2,-1)) * scale
 
     # Causal mask
     T = q.size(2) # number of tokens
