@@ -4,14 +4,18 @@ Evaluate experiment variants with three modes:
   --viz      : attention visualization
   --bench    : DCLM CORE benchmark
 
+By default, only models missing from the results files are evaluated.
+Use --all to force re-evaluation of every model.
+
 Each experiment may have been trained on a different codebase version (different
 attention implementations, etc.), so we check out the correct commit into a
 temporary git worktree and run eval from there.
 
 Examples:
-    python experiments/eval.py                          # sample only
+    python experiments/eval.py                          # sample missing only
+    python experiments/eval.py --all                    # sample all (rerun)
     python experiments/eval.py --viz --no-sample        # viz only
-    python experiments/eval.py --bench --no-sample      # bench only
+    python experiments/eval.py --bench --no-sample      # bench missing only
     python experiments/eval.py --sample --viz --bench   # all three
 """
 import os
@@ -38,8 +42,9 @@ EXPERIMENTS = [
     ("d12-taylor-relu",    "62a6e70", "relu(1+x+x^2/2+x^3/6)"),
     ("d12-taylor-relu-v2", "f57b452", "attn*sqrt(d), then relu(1+x+x^2/2+x^3/6)"),
     ("d12-taylor-relu-v3", "0c025b7", "relu(x+x^2/2+x^3/6)"), 
-    ("d12-relu-x3", "39a5f83", "relu(x^3)"), 
-    ("d12-relu-x5", "2939823", "relu(x^5)"), 
+    ("d12-relu-x3-v2", "39a5f83", "relu(x^3)"), 
+    ("d12-relu-x5-v2", "2939823", "relu(x^5)"),
+    ("d12-di-exp",  "78887f2", "di-exp approach for softmax"),
 ]
 
 PROMPT = "The capital of France is"
@@ -247,6 +252,8 @@ def main():
                         help="Max examples per CORE task (default: 100)")
     parser.add_argument("--model-tag", type=str, default=None,
                         help="Run only this model tag (default: all)")
+    parser.add_argument("--all", action="store_true", default=False,
+                        help="Force rerun for all models (default: only run missing)")
     args = parser.parse_args()
 
     if not (args.sample or args.viz or args.bench):
@@ -263,6 +270,16 @@ def main():
     samples_path = os.path.join(REPO_ROOT, "experiments", "eval_samples.json")
     bench_path = os.path.join(REPO_ROOT, "experiments", "eval_bench.json")
 
+    # Load existing results to skip already-evaluated models
+    existing_samples = {}
+    existing_bench = {}
+    if os.path.exists(samples_path):
+        with open(samples_path, "r") as f:
+            existing_samples = json.load(f)
+    if os.path.exists(bench_path):
+        with open(bench_path, "r") as f:
+            existing_bench = json.load(f)
+
     experiments = EXPERIMENTS
     if args.model_tag:
         experiments = [(t, c, d) for t, c, d in EXPERIMENTS if t == args.model_tag]
@@ -273,6 +290,18 @@ def main():
 
     for model_tag, commit, desc in experiments:
         label = f"{model_tag} @ {commit or 'HEAD'}"
+
+        # Determine which modes actually need running for this model
+        do_sample = args.sample and (args.all or model_tag not in existing_samples)
+        viz_exists = os.path.exists(os.path.join(REPO_ROOT, "experiments", model_tag, "attn_viz_heatmaps.png"))
+        do_viz = args.viz and (args.all or not viz_exists)
+        do_bench = args.bench and (args.all or model_tag not in existing_bench)
+
+        if not (do_sample or do_viz or do_bench):
+            print(f"--- {label} ({desc}) --- skipped (results exist)")
+            print()
+            continue
+
         print(f"--- {label} ({desc}) ---")
 
         codebase_path = REPO_ROOT
@@ -287,7 +316,7 @@ def main():
                 codebase_path = worktree_path
 
             # -- Sample mode --
-            if args.sample:
+            if do_sample:
                 try:
                     completion = run_sample(codebase_path, model_tag)
                     print(f"  [sample] {completion}")
@@ -299,7 +328,7 @@ def main():
                     print(f"  [sample] skipped: {e}")
 
             # -- Viz mode --
-            if args.viz:
+            if do_viz:
                 try:
                     output_dir = run_viz(codebase_path, model_tag)
                     print(f"  [viz] saved to {output_dir}/")
@@ -307,7 +336,7 @@ def main():
                     print(f"  [viz] skipped: {e}")
 
             # -- Bench mode --
-            if args.bench:
+            if do_bench:
                 try:
                     bench_result = run_bench(codebase_path, model_tag, args.max_per_task)
                     core = bench_result["core_metric"]

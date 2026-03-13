@@ -64,5 +64,23 @@
     "desc": "relu(x+x^2/2+x^3/6)",
     "prompt": "The capital of France is",
     "completion": " the capital of the French Republic, and the capital of the Republic of France. The capital of the Republic of France is the capital of the Republic of the Netherlands"
+  },
+  "d12-di-exp": {
+    "commit": "78887f2",
+    "desc": "di-exp approach for softmax",
+    "prompt": "The capital of France is",
+    "completion": " the city of Paris, which is located in the French Alps. The city is located in the French Alps, which is a part of the French Alps. The"
+  },
+  "d12-relu-x3-v2": {
+    "commit": "39a5f83",
+    "desc": "relu(x^3)",
+    "prompt": "The capital of France is",
+    "completion": " the capital of the French Republic, and the capital of the French Republic, the capital of the French Republic, the capital of the French Republic, and the capital"
+  },
+  "d12-relu-x5-v2": {
+    "commit": "2939823",
+    "desc": "relu(x^5)",
+    "prompt": "The capital of France is",
+    "completion": " Paris, and the capital of the world is Paris. The capital of France is Paris, and the capital of the world is Paris. The capital of France is"
   }
 }
