@@ -1,3 +1,4 @@
+import math
 from contextlib import contextmanager
 
 import torch
@@ -64,21 +65,35 @@ def capture_attn():
     finally:
         _attn_capture = None
 
+def _di_exp_softmax(x, dim=-1):
+    """Softmax using DI-Exp chord interpolation.
+
+    exp(x) = 2^(x * log2(e)). Split into integer part q and
+    fractional part r, then approximate 2^r ≈ 1 + r/2 (chord).
+    """
+    x = x - x.max(dim=dim, keepdim=True).values
+    L = x * math.log2(math.e)        # base-2 exponent (≤ 0)
+    q = torch.floor(L)               # integer part
+    r = L - q                        # fractional part in [0, 1)
+    exp_approx = (1.0 + r * 0.5) * torch.exp2(q)
+    return exp_approx / exp_approx.sum(dim=dim, keepdim=True).clamp(min=1e-6)
+
 def linear_attn(q, k, v):
     q, k, v = q.transpose(1,2), k.transpose(1,2), v.transpose(1,2) # (B, T, H, D) -> (B, H, T, D)
 
+    scale = q.size(-1) ** -0.5
+
     # Attention matrix
-    attn = torch.matmul(q, k.transpose(-2,-1))
+    attn = torch.matmul(q, k.transpose(-2,-1)) * scale
 
     # Causal mask
     T = q.size(2) # number of tokens
     TT = torch.ones(T, T, device=q.device, dtype=torch.bool) # TxT matrix filled with True
     mask = torch.triu(TT, diagonal=1) # main diagonal and everything below becomes false
-    attn = attn.masked_fill(mask, 0.0)
+    attn = attn.masked_fill(mask, float('-inf'))
 
-    # Softmax replacement 
-    attn = F.relu(attn ** 5)
-    attn = attn / attn.sum(dim=-1, keepdim=True).clamp(min=1e-6)
+    # DI-Exp chord interpolation softmax
+    attn = _di_exp_softmax(attn, dim=-1)
 
     # Capture attn for debugging
     if _attn_capture is not None:
