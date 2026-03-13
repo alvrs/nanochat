@@ -72,6 +72,7 @@ def _di_exp_softmax(x, dim=-1):
     fractional part r, then approximate 2^r ≈ 1 + r/2 (chord).
     """
     x = x - x.max(dim=dim, keepdim=True).values
+    x = x.clamp(min=-15)             # DI-ClippedSoftmax: exp(-15) ≈ 0, avoids -inf → NaN
     L = x * math.log2(math.e)        # base-2 exponent (≤ 0)
     q = torch.floor(L)               # integer part
     r = L - q                        # fractional part in [0, 1)
